@@ -49,7 +49,7 @@ class User(db.Model, SerializerMixin):
 class Recipe(db.Model, SerializerMixin):
     __tablename__ = 'recipes'
     __table_args__ = (
-        db.CheckConstraint('length(instructions) >= 50'),
+        db.CheckConstraint('length(instructions) >= 50', name='instructions_length_check'),
     )
 
     id = db.Column(db.Integer, primary_key=True)
@@ -66,11 +66,3 @@ class Recipe(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<Recipe {self.id}: {self.title}>'
-
-    @validates('title', 'instructions')
-    def validate_recipe(self, key, value):
-        if not key: 
-            return AttributeError(f'{key} must be present')
-        if key == 'instructions' and len(value) < 50: 
-            return AttributeError(f'{key} must be at least 50 characters')
-        return value
