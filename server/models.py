@@ -17,6 +17,8 @@ class User(db.Model, SerializerMixin):
 
     recipes = db.relationship('Recipe', back_populates='user')
 
+    serialize_rules = ('-created_at', '-updated_at', '-_password_hash', '-recipes')
+
     def __repr__(self):
         return f'User #{self.id}: {self.username}'
     
@@ -39,7 +41,7 @@ class User(db.Model, SerializerMixin):
         if not value or existing_user: 
             return AttributeError('Unique username required')
         return value 
-    
+
     @validates('_password_hash', 'image_url', 'bio')
     def validate_user(self, key, value):
         if not value: 
@@ -63,6 +65,8 @@ class Recipe(db.Model, SerializerMixin):
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship('User', back_populates='recipes')
+
+    serialize_only = ('id', 'title', 'instructions', 'minutes_to_complete', 'user')
 
     def __repr__(self):
         return f'<Recipe {self.id}: {self.title}>'
